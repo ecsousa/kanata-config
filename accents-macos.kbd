@@ -1,0 +1,36 @@
+;; vim: sw=2 ts=2:
+
+(defalias
+  ;;us layout inputs
+  _à (macro A-grv a) _À (macro A-grv S-a)
+  _á (macro A-e a) _Á (macro A-e S-a)
+  _â (macro A-i a) _Â (macro A-i S-a)
+  _ã (macro A-n a) _Ã (macro A-n S-a)
+  _ç (macro A-c) _Ç (macro A-S-c)
+  _é (macro A-e e) _É (macro A-e S-e)
+  _ê (macro A-i e) _Ê (macro A-i S-e)
+  _í (macro A-e i) _Í (macro A-e S-i)
+  _ó (macro A-e o) _Ó (macro A-e S-o)
+  _ô (macro A-i o) _Ô (macro A-i S-o)
+  _õ (macro A-n o) _Õ (macro A-n S-o)
+  _ú (macro A-e u) _Ú (macro A-e S-u)
+
+)
+
+(deftemplate accent (lower upper) (fork $lower (multi (release-key lsft) (release-key rsft) $upper) (lsft rsft)))
+
+(defalias
+  á (t! accent @_á @_Á)
+  ú (t! accent @_ú @_Ú)
+  í (t! accent @_í @_Í)
+  é (t! accent @_é @_É)
+  ê (t! accent @_ê @_Ê)
+  â (t! accent @_â @_Â)
+  ó (t! accent @_ó @_Ó)
+  ô (t! accent @_ô @_Ô)
+  à (t! accent @_à @_À)
+  ã (t! accent @_ã @_Ã)
+  ç (t! accent @_ç @_Ç)
+  õ (t! accent @_õ @_Õ)
+)
+

@@ -1,0 +1,40 @@
+;; Work-around in macOS to prevent isse when starting a tap-hold layer change
+;; in rapid success of pressing a previous normal char, when repeat delay is
+;; set to shortest, which can can the char to be repeated for a whiel after
+;; the key has already been released.
+
+(platform (win winiov2 wintercept linux) (deftemplate release-keys (action) $action))
+
+(platform (macos) (deftemplate release-keys (action) (multi
+  (release-key q)
+  (release-key w)
+  (release-key e)
+  (release-key r)
+  (release-key t)
+  (release-key y)
+  (release-key u)
+  (release-key i)
+  (release-key k)
+  (release-key o)
+  (release-key p)
+  (release-key a)
+  (release-key s)
+  (release-key d)
+  (release-key f)
+  (release-key g)
+  (release-key h)
+  (release-key j)
+  (release-key k)
+  (release-key l)
+  (release-key z)
+  (release-key x)
+  (release-key c)
+  (release-key v)
+  (release-key b)
+  (release-key n)
+  (release-key m)
+  (release-key spc)
+  (release-key ,)
+  (release-key .)
+  $action
+)))

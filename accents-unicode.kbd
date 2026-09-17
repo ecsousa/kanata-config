@@ -1,0 +1,34 @@
+;; vim: sw=2 ts=2:
+
+(defalias
+  _à (unicode à) _À (unicode À)
+  _á (unicode á) _Á (unicode Á)
+  _â (unicode â) _Â (unicode Â)
+  _ã (unicode ã) _Ã (unicode Ã)
+  _ç (unicode ç) _Ç (unicode Ç)
+  _é (unicode é) _É (unicode É)
+  _ê (unicode ê) _Ê (unicode Ê)
+  _í (unicode í) _Í (unicode Í)
+  _ó (unicode ó) _Ó (unicode Ó)
+  _ô (unicode ô) _Ô (unicode Ô)
+  _õ (unicode õ) _Õ (unicode Õ)
+  _ú (unicode ú) _Ú (unicode Ú)
+)
+
+(deftemplate accent (lower upper) (fork $lower $upper (lsft rsft)))
+
+(defalias
+  á (t! accent @_á @_Á)
+  ú (t! accent @_ú @_Ú)
+  í (t! accent @_í @_Í)
+  é (t! accent @_é @_É)
+  ê (t! accent @_ê @_Ê)
+  â (t! accent @_â @_Â)
+  ó (t! accent @_ó @_Ó)
+  ô (t! accent @_ô @_Ô)
+  à (t! accent @_à @_À)
+  ã (t! accent @_ã @_Ã)
+  ç (t! accent @_ç @_Ç)
+  õ (t! accent @_õ @_Õ)
+)
+

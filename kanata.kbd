@@ -1,0 +1,198 @@
+;; vim: sw=2 ts=2:
+
+(defvar
+  tap-timeout   40
+  hold-timeout  225
+  macro-delay   10
+  tt $tap-timeout
+  ht $hold-timeout
+  md $macro-delay
+)
+
+(defcfg
+  process-unmapped-keys yes
+  concurrent-tap-hold yes
+  ;;rapid-event-delay 20
+  macos-dev-names-exclude (
+    "Basilisk X HyperSpeed"
+  )
+  log-layer-changes no
+)
+
+(deftemplate tap-hold (tap hold) (tap-hold $tt $ht $tap $hold))
+(deftemplate hold-layer (layer) (tap-hold $tt $ht _ (layer-toggle $layer)))
+(deftemplate shift-fork (lower upper) (fork $lower $upper (lsft rsft)))
+(deftemplate navnext (key) (macro (unmod ]) $key))
+(deftemplate navprev (key) (macro (unmod [) $key))
+
+;; Reduce timeout for ESC
+(deftemplate tap-hold-layer (key layer) (tap-hold 0 $ht $key (layer-toggle $layer)))
+
+(defsrc)
+
+(platform (macos) (defvirtualkeys
+  ;; Pure state markers driven by kanata-vk-agent. The action is irrelevant;
+  ;; only `(input virtual ...)` checks read them, so give each a distinct nop.
+  com.parallels.desktop.console nop0
+  com.microsoft.rdc.macos       nop1
+  fullscreen                    nop2
+))
+
+;; Swap to Windows-style modifiers only while a Windows-remote app is frontmost
+;; AND that app is fullscreen. The check has to live on the key rather than on
+;; the virtual key: a defvirtualkeys action is evaluated once, when the agent
+;; presses it, so whichever of the app/fullscreen keys lands first would decide
+;; the layer before the other one exists. Evaluating here defers the decision to
+;; the moment you actually press the modifier, when both states are settled.
+(deftemplate win-mod (normal win)
+  (switch
+    ((and (input virtual fullscreen)
+          (or (input virtual com.microsoft.rdc.macos)
+              (input virtual com.parallels.desktop.console))))
+    $win break
+    () $normal break
+  )
+)
+
+(platform (macos) (defalias
+  w-lalt (t! win-mod lalt lmet)
+  w-lmet (t! win-mod lmet lalt)
+  w-rmet (t! win-mod rmet ralt)
+  w-ralt (t! win-mod ralt S-f10)
+))
+
+(platform (win winiov2 wintercept linux) (defalias
+  w-lalt lalt
+  w-lmet lmet
+  w-rmet rmet
+  w-ralt ralt
+))
+
+(include "release-keys.kbd")
+
+(deflayermap (base)
+  lalt @w-lalt
+  lmet @w-lmet
+  rmet @w-rmet
+  ralt @w-ralt
+
+  caps  (t! tap-hold-layer esc misc)
+  esc  (t! tap-hold-layer esc misc)
+
+  ret (t! hold-layer function)
+
+
+  ' (t! release-keys
+      (tap-hold $tt $ht ' (layer-toggle accent))
+    )
+
+  ; (t! release-keys
+      (t! hold-layer cursor)
+    )
+)
+
+(platform (macos) (defalias context-menu S-f10))
+(platform (win winiov2 wintercept linux) (defalias context-menu cmp))
+
+(deflayermap (cursor)
+  grv ;
+
+  k lctl l lalt
+
+  q home   w up     e end     r pgup
+  a left   s down   d right   f pgdn
+
+  z del x kp+ c bspc v @context-menu
+  t ins
+
+)
+
+(platform (macos) (defalias prnt S-M-4))
+(platform (win winiov2 wintercept linux) (defalias prnt prnt))
+
+(platform (macos) (defalias misc-rmet 0))
+(platform (macos) (defalias misc-ralt .))
+(platform (macos) (defalias misc-rctl rctl))
+
+(platform (win winiov2 wintercept linux) (defalias misc-rmet rmet))
+(platform (win winiov2 wintercept linux) (defalias misc-ralt 0))
+(platform (win winiov2 wintercept linux) (defalias misc-rctl .))
+
+(deflayermap (misc)
+  grv lrld
+
+  8 nlk
+  9 @prnt
+  0 caps
+  - (caps-word-toggle 5000)
+  = (caps-word-custom-toggle 5000
+     (-)
+     (a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9
+     kp0 kp1 kp2 kp3 kp4 kp5 kp6 kp7 kp8 kp9 bspc del up down left rght)
+    )
+  \ del
+
+  i 7 o 8 p 9 [ / ] +
+  k 4 l 5 ; 6 ' -
+  , 1 . 2 / 3
+
+  rmet @misc-rmet
+  ralt @misc-ralt
+  rctl @misc-rctl
+)
+
+(include "accents-unicode.kbd")
+
+(deflayermap (accent)
+  grv '
+
+  q @ú w @í e @é r @ê
+  a @á s @â d @ó f @ô
+  z @à x @ã c @ç v @õ
+
+  ret rsft
+
+)
+
+(deflayermap (function)
+  grv [
+
+  1 brdown 2 brup
+  3 mute 4 vold 5 volu
+  6 bldn 7 blup
+
+  o lctl p lalt
+
+  q  f7 w  f8 e  f9 r  f10
+  a  f4 s  f5 d  f6 f  f11
+  z  f1 x  f2 c  f3 v  f12
+)
+
+(deflayermap (vimnav-next)
+  q (t! navnext q)
+  e (t! navnext e)
+  t (t! navnext t)
+  a (t! navnext a)
+  s (t! navnext s)
+  f (t! navnext f)
+  l (t! navnext l)
+  c (t! navnext c)
+  b (t! navnext b)
+  n (t! navnext n)
+  spc (t! navnext spc)
+)
+
+(deflayermap (vimnav-prev)
+  q (t! navprev q)
+  e (t! navprev e)
+  t (t! navprev t)
+  a (t! navprev a)
+  s (t! navprev s)
+  f (t! navprev f)
+  l (t! navprev l)
+  c (t! navprev c)
+  b (t! navprev b)
+  n (t! navprev n)
+  spc (t! navprev spc)
+)
+

@@ -1,0 +1,35 @@
+;; vim: sw=2 ts=2:
+
+(defalias
+  _à (macro A-0 A-0 A-e A-0) _À (macro A-0 A-0 A-c A-0)
+  _á (macro A-0 A-0 A-e A-1) _Á (macro A-0 A-0 A-c A-1)
+  _â (macro A-0 A-0 A-e A-2) _Â (macro A-0 A-0 A-c A-2)
+  _ã (macro A-0 A-0 A-e A-3) _Ã (macro A-0 A-0 A-c A-3)
+  _ç (macro A-0 A-0 A-e A-7) _Ç (macro A-0 A-0 A-c A-7)
+  _é (macro A-0 A-0 A-e A-9) _É (macro A-0 A-0 A-c A-9)
+  _ê (macro A-0 A-0 A-e A-a) _Ê (macro A-0 A-0 A-c A-a)
+  _í (macro A-0 A-0 A-e A-d) _Í (macro A-0 A-0 A-c A-d)
+  _ó (macro A-0 A-0 A-f A-3) _Ó (macro A-0 A-0 A-d A-3)
+  _ô (macro A-0 A-0 A-f A-4) _Ô (macro A-0 A-0 A-d A-4)
+  _õ (macro A-0 A-0 A-f A-5) _Õ (macro A-0 A-0 A-d A-5)
+  _ú (macro A-0 A-0 A-f A-a) _Ú (macro A-0 A-0 A-d A-a)
+
+)
+
+(deftemplate accent (lower upper) (fork $lower (multi (release-key lsft) (release-key rsft) $upper) (lsft rsft)))
+
+(defalias
+  á (t! accent @_á @_Á)
+  ú (t! accent @_ú @_Ú)
+  í (t! accent @_í @_Í)
+  é (t! accent @_é @_É)
+  ê (t! accent @_ê @_Ê)
+  â (t! accent @_â @_Â)
+  ó (t! accent @_ó @_Ó)
+  ô (t! accent @_ô @_Ô)
+  à (t! accent @_à @_À)
+  ã (t! accent @_ã @_Ã)
+  ç (t! accent @_ç @_Ç)
+  õ (t! accent @_õ @_Õ)
+)
+
