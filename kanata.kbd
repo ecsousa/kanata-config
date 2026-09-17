@@ -4,9 +4,16 @@
   tap-timeout   40
   hold-timeout  225
   macro-delay   10
+  ;; Window after releasing a tap for a re-press+hold to repeat the tap
+  ;; action instead of activating hold. Much longer than tap-timeout since
+  ;; it needs to comfortably fit a deliberate double-tap-then-hold gesture,
+  ;; unlike tap-timeout which must stay short to not misfire during normal
+  ;; fast typing.
+  dtap-timeout  200
   tt $tap-timeout
   ht $hold-timeout
   md $macro-delay
+  dtt $dtap-timeout
 )
 
 (defcfg
@@ -21,6 +28,8 @@
 
 (deftemplate tap-hold (tap hold) (tap-hold $tt $ht $tap $hold))
 (deftemplate hold-layer (layer) (tap-hold $tt $ht _ (layer-toggle $layer)))
+;; Like hold-layer, but double-tap+hold repeats the key instead of holding the layer.
+(deftemplate hold-layer-dtap (layer) (tap-hold $dtt $ht _ (layer-toggle $layer)))
 (deftemplate shift-fork (lower upper) (fork $lower $upper (lsft rsft)))
 (deftemplate navnext (key) (macro (unmod ]) $key))
 (deftemplate navprev (key) (macro (unmod [) $key))
@@ -83,11 +92,11 @@
 
 
   ' (t! release-keys
-      (tap-hold $tt $ht ' (layer-toggle accent))
+      (tap-hold $dtt $ht ' (layer-toggle accent))
     )
 
   ; (t! release-keys
-      (t! hold-layer cursor)
+      (t! hold-layer-dtap cursor)
     )
 )
 
