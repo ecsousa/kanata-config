@@ -27,20 +27,32 @@
 )
 
 (deftemplate tap-hold (tap hold) (tap-hold $tt $ht $tap $hold))
-;; tap-hold-press activates the hold action as soon as a different key is
-;; pressed, even if hold-timeout hasn't elapsed yet. Without this, a fast
-;; hold+tap roll (e.g. hold ; then quickly tap d) can resolve as a tap of
-;; the layer key before the interrupting key is used, e.g. outputting a
-;; literal ";d" instead of switching layers for the right-arrow tap.
-(deftemplate hold-layer (layer) (tap-hold-press $tt $ht _ (layer-toggle $layer)))
+;; tap-hold-release activates the hold action early once a different key is
+;; both pressed AND released while this key is still held — e.g. hold ;
+;; then tap-and-release d switches to the cursor layer for d immediately,
+;; without waiting the full hold-timeout. Plain tap-hold can't do this
+;; (only its own release/timeout decide it), so a fast hold+tap roll would
+;; resolve as a tap of the gateway key, e.g. outputting literal ";d" instead
+;; of the right-arrow.
+;;
+;; tap-hold-press (early-activate on mere press, not requiring release) is
+;; more responsive but too trigger-happy for these gateways: ordinary fast
+;; typing routinely overlaps a key's own release with the next key's press
+;; (e.g. releasing Esc just after pressing k, mid-word). tap-hold-press
+;; treated that overlap as a hold, misfiring the layer (e.g. Esc+k -> "4" on
+;; the misc layer instead of Escape then "k"). tap-hold-release only commits
+;; to the hold action once the interrupting key's full press+release has
+;; happened while the gateway is still down, which only occurs on a genuine
+;; deliberate hold-and-tap, not on typing rollover.
+(deftemplate hold-layer (layer) (tap-hold-release $tt $ht _ (layer-toggle $layer)))
 ;; Like hold-layer, but double-tap+hold repeats the key instead of holding the layer.
-(deftemplate hold-layer-dtap (layer) (tap-hold-press $dtt $ht _ (layer-toggle $layer)))
+(deftemplate hold-layer-dtap (layer) (tap-hold-release $dtt $ht _ (layer-toggle $layer)))
 (deftemplate shift-fork (lower upper) (fork $lower $upper (lsft rsft)))
 (deftemplate navnext (key) (macro (unmod ]) $key))
 (deftemplate navprev (key) (macro (unmod [) $key))
 
 ;; Reduce timeout for ESC
-(deftemplate tap-hold-layer (key layer) (tap-hold-press 0 $ht $key (layer-toggle $layer)))
+(deftemplate tap-hold-layer (key layer) (tap-hold-release 0 $ht $key (layer-toggle $layer)))
 
 (defsrc)
 
@@ -97,7 +109,7 @@
 
 
   ' (t! release-keys
-      (tap-hold-press $dtt $ht ' (layer-toggle accent))
+      (tap-hold-release $dtt $ht ' (layer-toggle accent))
     )
 
   ; (t! release-keys
